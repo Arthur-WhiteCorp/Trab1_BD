@@ -125,8 +125,14 @@ def create_tables(my_cursor):
                 PRODUCT_ID INT,
                 SIMILAR_ASIN CHAR(10),
                 PRIMARY KEY (PRODUCT_ID, SIMILAR_ASIN),
-                FOREIGN KEY (PRODUCT_ID, SIMILAR_ASIN) REFERENCES PRODUCT(PRODUCT_ID, ASIN)
+                FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCT(PRODUCT_ID)
                 )
+        """,
+        """
+            CREATE RULE check_value_exists AS
+            ON INSERT TO PRODUCT_SIMILAR
+            WHERE NOT EXISTS ( SELECT 1 FROM PRODUCT WHERE ASIN = NEW.SIMILAR_ASIN)
+            DO INSTEAD NOTHING
         """,
         """
         CREATE TABLE CATEGORY (
@@ -148,7 +154,7 @@ def create_tables(my_cursor):
         )
         """,
         """
-        CREATE DOMAIN RATING AS INT CHECK( VALUE > 0 AND VALUE<=5)
+        CREATE DOMAIN RATING AS INT CHECK( VALUE > 0 AND VALUE<=5 )
         """,
         
         """
@@ -174,9 +180,9 @@ def create_tables(my_cursor):
 
 if __name__ == '__main__':
 
-    create_database()
-    create_database_ini()
-    create_user()
+    #create_database()
+    #create_database_ini()
+    #create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
