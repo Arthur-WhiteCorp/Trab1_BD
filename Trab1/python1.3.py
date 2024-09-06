@@ -30,15 +30,29 @@ def load_config(file_name='database.ini', section='postgresql'):
 def connect(config):
     """ Connect to the PostgreSQL database server """
     try:
-        # connecting to the PostgreSQL server
-        with psycopg2.connect(**config) as conn:
-            print('Connected to the PostgreSQL server.')
-            return conn
+        my_connection = psycopg2.connect(**config)
+        print('Connected to the PostgreSQL server.')
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
 
+    return my_connection
+
+def close_connection(my_connection):
+    try:
+        my_connection.close()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
+
+def create_cursor(my_connection):
+    try:
+        my_cursor = my_connection.cursor()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
+    
+    return my_cursor
 if __name__ == '__main__':
 
     config = load_config()
-    print(config)
-    connect(config)
+    my_connection = connect(config)
+    my_cursor = create_cursor(my_connection)
+    close_connection(my_connection)
