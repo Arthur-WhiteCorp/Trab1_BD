@@ -129,12 +129,6 @@ def create_tables(my_cursor):
                 )
         """,
         """
-            CREATE RULE check_value_exists AS
-            ON INSERT TO PRODUCT_SIMILAR
-            WHERE NOT EXISTS ( SELECT 1 FROM PRODUCT WHERE ASIN = NEW.SIMILAR_ASIN)
-            DO INSTEAD NOTHING
-        """,
-        """
         CREATE TABLE CATEGORY (
                 CATEGORY_NAME VARCHAR(100),
                 CATEGORY_ID INT,
