@@ -2,7 +2,8 @@ import re
 from enum import Enum
 
 class CategoriesSub:
-    def __init__(self, name='', id='', sub: 'CategoriesSub' = None):
+    def __init__(self, name='', id='', sub: 'CategoriesSub' = None, parent_id=''):
+        self.parent_id = parent_id
         self.name = name
         self.id = id
         self.sub = sub
@@ -153,19 +154,20 @@ def parse_category(category_str):
 def filter_empty_strings(vetor):
     return [item for item in vetor if item != '']
     
-def map_subcategory_obj(parameters, new_category):
+def map_subcategory_obj(parameters, new_category, parent_id):
     if len(parameters) > 0:
         name, id = parse_category(parameters[0])
         
         # Criar nova subcategoria se não existir
         if new_category is None:
-            new_category = CategoriesSub(name=name, id=id)
+            new_category = CategoriesSub(name=name, id=id, parent_id=parent_id)
         else:
+            new_category.parentId = parent_id
             new_category.name = name
             new_category.id = id
         
         # Recursivamente mapear as subcategorias
-        new_category.sub = map_subcategory_obj(parameters[1:], new_category.sub)
+        new_category.sub = map_subcategory_obj(parameters[1:], new_category.sub, new_category.id)
         
     return new_category  # Retorna o objeto CategoriesSub atualizado
 
@@ -175,7 +177,7 @@ def print_category_cascade(category, level=0, result=''):
     
     indent = '\t' * level
     
-    result += f"{indent}Name: {category.name}, ID: {category.id}\n"
+    result += f"{indent}Name: {category.name}, ID: {category.id}, Parent ID: {category.parent_id}\n"
     
     if category.sub:
         result += print_category_cascade(category.sub, level + 1)
@@ -190,7 +192,7 @@ def get_parameter_for_subcategories_atribute(line):
     
     new_category = CategoriesSub()
     
-    new_category = map_subcategory_obj(parameters, new_category)
+    new_category = map_subcategory_obj(parameters, new_category, new_category.parent_id)
     
     return new_category
 
@@ -209,7 +211,7 @@ def get_sub_review(line):
     
 lista_produtos = []
 
-with open('amazon-meta.txt', 'r') as file:
+with open('amazon-meta_teste.txt', 'r') as file:
     lines = file.readlines()
     new_product = Product()
     
