@@ -12,10 +12,6 @@ DATABASE_INI = 'database.ini'
 USER_NAME = 'professor'
 PASSWORD = 'batatinha'
 
-
-
-
-
 def error_handling(err):
     if err != '':
         print(err)
