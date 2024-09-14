@@ -61,7 +61,7 @@ def create_user():
     error_handling(give_user_permissions.stderr)
 
 def resolve_path(file_name):
-    current_dir_path = os.path.dirname(__file__)
+    current_dir_path = os.getcwd()
     file_path = f"{current_dir_path}/{file_name}"
     return file_path
 
@@ -101,6 +101,12 @@ def close_connection(my_connection):
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
 
+def close_cursor(my_cursor):
+    try:
+        my_cursor.close()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
+
 def create_cursor(my_connection):
     try:
         my_cursor = my_connection.cursor()
@@ -109,7 +115,7 @@ def create_cursor(my_connection):
     
     return my_cursor
 
-def create_tables(my_cursor):
+def create_tables(my_connection,my_cursor):
     """ Create tables in the PostgreSQL database"""
     commands = (
         """
@@ -171,6 +177,52 @@ def create_tables(my_cursor):
 
 
 
+def insert_into_product(my_connection, my_cursor, PRODUCT_ID:int, ASIN:str, TITLE:str, PRODUCT_GROUP:str, SALES_RANK:int ):
+    command = f"""INSERT INTO PRODUCT (PRODUCT_ID, ASIN, TITLE, PRODUCT_GROUP, SALES_RANK) 
+                  VALUES (%s,%s,%s,%s,%s)"""
+    try:
+        my_cursor.execute(command, (PRODUCT_ID, ASIN, TITLE, PRODUCT_GROUP, SALES_RANK))
+        my_connection.commit()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)    
+
+
+def insert_into_product_similar(my_connection, my_cursor, PRODUCT_ID:int, SIMILAR_ASIN:str):
+    command = f"""INSERT INTO PRODUCT_SIMILAR (PRODUCT_ID, SIMILAR_ASIN) 
+                  VALUES (%s,%s)"""
+    try:
+        my_cursor.execute(command, (PRODUCT_ID, SIMILAR_ASIN))
+        my_connection.commit()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
+
+
+def insert_into_category(my_connection, my_cursor, CATEGORY_NAME:str, CATEGORY_ID:int ,PARENT_ID:int):
+    command = f"""INSERT INTO CATEGORY (CATEGORY_NAME, CATEGORY_ID, PARENT_ID) 
+                  VALUES (%s,%s,%s)"""
+    try:
+        my_cursor.execute(command, (CATEGORY_NAME, CATEGORY_ID, PARENT_ID))
+        my_connection.commit()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
+
+def insert_into_product_category(my_connection, my_cursor, PRODUCT_ID:int , CATEGORY_ID:int):
+    command = f"""INSERT INTO PRODUCT_CATEGORY (PRODUCT_ID, CATEGORY_ID) 
+                  VALUES (%s,%s)"""
+    try:
+        my_cursor.execute(command, (PRODUCT_ID, CATEGORY_ID))
+        my_connection.commit()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)   
+
+def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str, CUSTOMER_ID:str, REVIEW_RATING:int):
+    command = """INSERT INTO review (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING) 
+                 VALUES (%s, %s, %s, %s)"""
+    try:
+        my_cursor.execute(command, (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING))
+        my_connection.commit()
+    except (psycopg2.DatabaseError, Exception) as error:
+        print(error)
 
 if __name__ == '__main__':
 
@@ -180,5 +232,6 @@ if __name__ == '__main__':
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    create_tables(my_cursor)    
+    create_tables(my_connection,my_cursor)   
+    close_cursor(my_cursor)
     close_connection(my_connection)
