@@ -2,12 +2,13 @@ import re
 from enum import Enum
 
 class CategoriesSub:
-    def __init__(self, name='', id=''):
+    def __init__(self, name='', id='', sub: 'CategoriesSub' = None):
         self.name = name
         self.id = id
+        self.sub = sub
         
-    def __str__(self):
-        return f"\tName: {self.name}, ID: {self.id}"
+    def __str__(self, level=0):
+        return print_category_cascade(self, level)
 
 class Review:
     def __init__(self, total, downloaded, avg_rating):
@@ -63,7 +64,7 @@ class Product:
         self.reviews_sub = []
     
     def __str__(self):
-        categories_sub_str = "\n".join(str(sub) for sub in self.categories_sub)
+        categories_sub_str = str(self.categories_sub) if self.categories_sub else ''
         review_sub_str = "\n".join(str(sub_review) for sub_review in self.reviews_sub)
         return (f"\n\nId: {self.id}\nASIN: {self.asin}\ntitle: {self.title}\n"
                 f"group: {self.group}\nsalesrank: {self.salesrank}\nsimilar: {self.similar}\n"
@@ -120,23 +121,53 @@ def parse_category(category_str):
     if match:
         name = match.group(1).strip()  
         id = match.group(2)
-        return CategoriesSub(name, id)
+        return name, id
     else:
         raise ValueError("Formato inválido para a string")
+    
+def filter_empty_strings(vetor):
+    return [item for item in vetor if item != '']
+    
+def map_subcategory_obj(parameters, new_category):
+    if len(parameters) > 0:
+        name, id = parse_category(parameters[0])
+        
+        # Criar nova subcategoria se não existir
+        if new_category is None:
+            new_category = CategoriesSub(name=name, id=id)
+        else:
+            new_category.name = name
+            new_category.id = id
+        
+        # Recursivamente mapear as subcategorias
+        new_category.sub = map_subcategory_obj(parameters[1:], new_category.sub)
+        
+    return new_category  # Retorna o objeto CategoriesSub atualizado
+
+def print_category_cascade(category, level=0, result=''):
+    if category is None:
+        return ''
+    
+    indent = '\t' * level
+    
+    result += f"{indent}Name: {category.name}, ID: {category.id}\n"
+    
+    if category.sub:
+        result += print_category_cascade(category.sub, level + 1)
+    
+    return result
+
 
 def get_parameter_for_subcategories_atribute(line):
-    sub_categories_list = []
     
     parameters = line.split('|')
+    parameters = filter_empty_strings(parameters)
     
-    for parameter in parameters:
-        if parameter != '':
-            sub_categories_list.append(parse_category(parameter))
-            
-    # for item in sub_categories_list:
-    #     print(item.name)
-          
-    return sub_categories_list
+    new_category = CategoriesSub()
+    
+    new_category = map_subcategory_obj(parameters, new_category)
+    
+    return new_category
 
 def get_sub_review(line):
     
@@ -188,5 +219,41 @@ with open('amazon-meta.txt', 'r') as file:
     if new_product.id:
         lista_produtos.append(new_product)
 
+
+def print_product_details(product):
+    # Verifica se o produto é válido
+    if not isinstance(product, Product):
+        raise ValueError("O argumento deve ser um objeto da classe Product")
+
+    # Inicializa a string de resultado
+    result = f"Produto ID: {product.id}\n"
+    result += f"ASIN: {product.asin}\n"
+    result += f"Title: {product.title}\n"
+    result += f"Group: {product.group}\n"
+    result += f"Salesrank: {product.salesrank}\n"
+    result += f"Similar: {product.similar}\n"
+    result += f"Categories: {product.categories}\n"
+    
+    # Adiciona as subcategorias
+    result += "Categories-Sub:\n"
+    result += print_category_cascade(product.categories_sub) if product.categories_sub else "Nenhuma subcategoria\n"
+    
+    # Adiciona a revisão
+    result += f"Reviews: {product.reviews}\n"
+    
+    # Adiciona as sub-revisões
+    result += "Review-Sub:\n"
+    if product.reviews_sub:
+        for sub_review in product.reviews_sub:
+            result += str(sub_review)
+    else:
+        result += "Nenhuma sub-revisão\n"
+    
+    return result
+
+# Exemplo de uso
 for item in lista_produtos:
-    print(item)
+    print(print_product_details(item))
+
+# for item in lista_produtos:
+#     print(item)
