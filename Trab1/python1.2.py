@@ -134,7 +134,6 @@ def create_tables(my_cursor):
                 CATEGORY_ID INT,
                 PARENT_ID INT NULL,
                 PRIMARY KEY (CATEGORY_ID),
-                UNIQUE (CATEGORY_NAME),
                 FOREIGN KEY (PARENT_ID) REFERENCES CATEGORY(CATEGORY_ID)
         )
         """,
