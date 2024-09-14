@@ -22,13 +22,6 @@ def error_handling(err):
         sys.exit(1)
     return
 
-def resolve_path(file_name):
-    current_dir_path = os.path.dirname(__file__)
-    file_path = f"{current_dir_path}/{file_name}"
-    return file_path
-
-
-
 def create_database_ini(file_name):
 
     file_path = resolve_path(file_name)
