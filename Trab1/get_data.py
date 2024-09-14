@@ -210,7 +210,7 @@ with open('amazon-meta.txt', 'r') as file:
             elif line_type == ProductAttributesENUM.CATEGORIES:
                 new_product.categories = get_simple_parameter(line, 11)
             elif line_type == ProductAttributesENUM.CATEGORIES_SUB:
-                new_product.categories_sub = get_parameter_for_subcategories_atribute(line)
+                new_product.categories_sub.append(get_parameter_for_subcategories_atribute(line))
             elif line_type == ProductAttributesENUM.REVIEWS:
                 new_product.reviews = get_parameter_for_reviews_atribute(line, 8)
             elif line_type == ProductAttributesENUM.REVIEWS_SUB:
@@ -236,7 +236,11 @@ def print_product_details(product):
     
     # Adiciona as subcategorias
     result += "Categories-Sub:\n"
-    result += print_category_cascade(product.categories_sub) if product.categories_sub else "Nenhuma subcategoria\n"
+    
+    for item in product.categories_sub:
+        result += print_category_cascade(item)
+    
+    # result += print_category_cascade(product.categories_sub) if product.categories_sub else "Nenhuma subcategoria\n"
     
     # Adiciona a revisão
     result += f"Reviews: {product.reviews}\n"
