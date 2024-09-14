@@ -22,10 +22,18 @@ def error_handling(err):
         sys.exit(1)
     return
 
-def create_database_ini():
-    file = f"./Trab1/{DATABASE_INI.lower()}"
+def resolve_path(file_name):
+    current_dir_path = os.path.dirname(__file__)
+    file_path = f"{current_dir_path}/{file_name}"
+    return file_path
+
+
+
+def create_database_ini(file_name):
+
+    file_path = resolve_path(file_name)
     DATABASE_NAME_LOWER = DATABASE_NAME.lower()
-    with open(file, 'w') as config_file:
+    with open(file_path, 'w') as config_file:
         config_file.write("[postgresql]\n")
         config_file.write("host=localhost\n")
         config_file.write(f"database={DATABASE_NAME_LOWER}\n")
@@ -134,7 +142,6 @@ def create_tables(my_cursor):
                 CATEGORY_ID INT,
                 PARENT_ID INT NULL,
                 PRIMARY KEY (CATEGORY_ID),
-                UNIQUE (CATEGORY_NAME),
                 FOREIGN KEY (PARENT_ID) REFERENCES CATEGORY(CATEGORY_ID)
         )
         """,
@@ -174,9 +181,9 @@ def create_tables(my_cursor):
 
 if __name__ == '__main__':
 
-    #create_database()
-    #create_database_ini()
-    #create_user()
+    create_database()
+    create_database_ini(DATABASE_INI)
+    create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
