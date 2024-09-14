@@ -116,14 +116,39 @@ def get_parameter_for_reviews_atribute(line, index):
     return new_reviews
 
 def parse_category(category_str):
-    match = re.match(r"([\w\s\-\.\,&]+)\[(\d+)\]", category_str)
     
-    if match:
-        name = match.group(1).strip()  
-        id = match.group(2)
-        return name, id
-    else:
+    # print(category_str)
+    # Encontrar a posição do colchete de abertura
+    start_index = category_str.find('[')
+    
+    if start_index == -1:
+        # Se não encontrar o colchete, retornar None
         raise ValueError("Formato inválido para a string")
+        return None, None
+    
+    # Encontrar a posição do colchete de fechamento
+    end_index = category_str.find(']', start_index)
+    
+    if end_index == -1:
+        # Se não encontrar o colchete de fechamento, retornar None
+        raise ValueError("Formato inválido para a string")
+        return None, None
+    
+    # Extrair o nome e o ID
+    name = category_str[:start_index].strip()
+    id = category_str[start_index + 1:end_index]
+    
+    return name, id
+    
+    # print(category_str)
+    # match = re.match(r"([\w\s\-\.\,!#?:+$&()\'\"]*)\[(\d+)\]", category_str)
+    
+    # if match:
+    #     name = match.group(1).strip()  
+    #     id = match.group(2)
+    #     return name, id
+    # else:
+    #     raise ValueError("Formato inválido para a string")
     
 def filter_empty_strings(vetor):
     return [item for item in vetor if item != '']
