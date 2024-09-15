@@ -5,6 +5,11 @@ from configparser import ConfigParser
 import os
 
 from get_data import lista_produtos
+from get_data import Similar
+from get_data import CategoriesSub
+from get_data import Review
+from get_data import ReviewSub
+
 
 DATABASE_NAME = 'PRODUCTS'
 DATABASE_INI = 'database.ini'
@@ -114,6 +119,7 @@ def create_cursor(my_connection):
 def create_tables(my_connection,my_cursor):
     """ Create tables in the PostgreSQL database"""
     commands = (
+        # TABLE PRODUCT OK
         """
         CREATE TABLE PRODUCT (
             PRODUCT_ID INT UNIQUE,
@@ -127,7 +133,6 @@ def create_tables(my_connection,my_cursor):
         """ CREATE TABLE PRODUCT_SIMILAR (
                 PRODUCT_ID INT,
                 SIMILAR_ASIN CHAR(10),
-                PRIMARY KEY (PRODUCT_ID, SIMILAR_ASIN),
                 FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCT(PRODUCT_ID)
                 )
         """,
@@ -220,23 +225,35 @@ def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
         
-def map_product_list(my_connection, my_cursor,):
+def map_product_list(my_connection, my_cursor):
     for product in lista_produtos:
         if product.title == '' and product.group == '' and product.salesrank == '':
             product.title = None
             product.group = None
             product.salesrank = None
         insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
+        if isinstance(product.similar, Similar):
+            similar_ids_list = product.similar.ids
+            map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
+        
+        
+def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
+    if len(similar_ids_list) == 0:
+        insert_into_product_similar(my_connection, my_cursor, product_id, None)
+    else:    
+        for similar_id in similar_ids_list:
+            insert_into_product_similar(my_connection, my_cursor, product_id, similar_id)
+        
 
 if __name__ == '__main__':
 
-    create_database()
-    create_database_ini(DATABASE_INI)
+    # create_database()
+    # create_database_ini(DATABASE_INI)
     # create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    create_tables(my_connection,my_cursor)
+    # create_tables(my_connection,my_cursor)
     map_product_list(my_connection,my_cursor)
     close_cursor(my_cursor)
     close_connection(my_connection)

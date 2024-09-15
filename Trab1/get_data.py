@@ -283,8 +283,8 @@ def print_product_details(product):
     return result
 
 # Exemplo de uso
-for item in lista_produtos:
-    print(print_product_details(item))
+# for item in lista_produtos:
+#     print(print_product_details(item))
 
 # for item in lista_produtos:
 #     print(item)
