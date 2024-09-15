@@ -4,7 +4,7 @@ import sys
 from configparser import ConfigParser
 import os
 
-
+from get_data import lista_produtos
 
 DATABASE_NAME = 'PRODUCTS'
 DATABASE_INI = 'database.ini'
@@ -118,8 +118,8 @@ def create_tables(my_connection,my_cursor):
         CREATE TABLE PRODUCT (
             PRODUCT_ID INT UNIQUE,
             ASIN CHAR(10) NOT NULL,
-            TITLE VARCHAR(100),
-            PRODUCT_GROUP VARCHAR(100),
+            TITLE VARCHAR,
+            PRODUCT_GROUP VARCHAR,
             SALES_RANK INT,
             PRIMARY KEY (PRODUCT_ID,ASIN)
         )
@@ -219,15 +219,24 @@ def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str
         my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+        
+def map_product_list(my_connection, my_cursor,):
+    for product in lista_produtos:
+        if product.title == '' and product.group == '' and product.salesrank == '':
+            product.title = None
+            product.group = None
+            product.salesrank = None
+        insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
 
 if __name__ == '__main__':
 
     create_database()
     create_database_ini(DATABASE_INI)
-    create_user()
+    # create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    create_tables(my_connection,my_cursor)   
+    create_tables(my_connection,my_cursor)
+    map_product_list(my_connection,my_cursor)
     close_cursor(my_cursor)
     close_connection(my_connection)
