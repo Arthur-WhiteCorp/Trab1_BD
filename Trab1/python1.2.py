@@ -143,7 +143,8 @@ def create_tables(my_connection,my_cursor):
                 CATEGORY_ID INT,
                 PARENT_ID INT NULL,
                 PRIMARY KEY (CATEGORY_ID),
-                FOREIGN KEY (PARENT_ID) REFERENCES CATEGORY(CATEGORY_ID)
+                FOREIGN KEY (PARENT_ID) REFERENCES CATEGORY(CATEGORY_ID),
+                UNIQUE (CATEGORY_NAME, CATEGORY_ID)
         )
         """,
         """
@@ -201,12 +202,14 @@ def insert_into_product_similar(my_connection, my_cursor, PRODUCT_ID:int, SIMILA
 
 def insert_into_category(my_connection, my_cursor, CATEGORY_NAME:str, CATEGORY_ID:int ,PARENT_ID:int):
     command = f"""INSERT INTO CATEGORY (CATEGORY_NAME, CATEGORY_ID, PARENT_ID) 
-                  VALUES (%s,%s,%s)"""
+                  VALUES (%s,%s,%s) ON CONFLICT (CATEGORY_NAME, CATEGORY_ID) DO NOTHING"""
     try:
         my_cursor.execute(command, (CATEGORY_NAME, CATEGORY_ID, PARENT_ID))
         my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+        my_connection.rollback()
+
 
 def insert_into_product_category(my_connection, my_cursor, PRODUCT_ID:int , CATEGORY_ID:int):
     command = f"""INSERT INTO PRODUCT_CATEGORY (PRODUCT_ID, CATEGORY_ID) 
@@ -224,6 +227,7 @@ def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str
         my_cursor.execute(command, (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING))
         my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
+        my_connection.rollback()
         print(error)
         
 def map_product_list(my_connection, my_cursor):
@@ -232,11 +236,11 @@ def map_product_list(my_connection, my_cursor):
             product.title = None
             product.group = None
             product.salesrank = None
-        insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
+        #insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
         if isinstance(product.similar, Similar):
             similar_ids_list = product.similar.ids
-            map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
-        
+           #map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
+        map_category_list(my_connection, my_cursor, product.categories_sub)
         
 def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
     if len(similar_ids_list) == 0:
@@ -245,16 +249,28 @@ def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
         for similar_id in similar_ids_list:
             insert_into_product_similar(my_connection, my_cursor, product_id, similar_id)
         
-
+def map_category_list(my_connection, my_cursor, categories):
+    if len(categories) == 0:
+        None
+    else:
+        for category_index in range(len(categories)):
+            child_category = categories[category_index]
+            while (child_category != None):
+                if child_category.parent_id == "":
+                    insert_into_category(my_connection, my_cursor, child_category.name, child_category.id, None)
+                else:
+                    insert_into_category(my_connection, my_cursor, child_category.name, child_category.id, child_category.parent_id)
+                child_category = child_category.sub
+    
 if __name__ == '__main__':
 
-    create_database()
-    # create_database_ini(DATABASE_INI)
-    # create_user()
+    #create_database()
+    #create_database_ini(DATABASE_INI)
+    #create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    create_tables(my_connection,my_cursor)
+    #create_tables(my_connection,my_cursor)
     map_product_list(my_connection,my_cursor)
     close_cursor(my_cursor)
     close_connection(my_connection)
