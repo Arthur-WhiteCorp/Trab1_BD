@@ -3,6 +3,7 @@ import psycopg2
 import sys
 from configparser import ConfigParser
 import os
+from datetime import datetime
 
 from get_data import lista_produtos
 from get_data import Similar
@@ -240,7 +241,8 @@ def map_product_list(my_connection, my_cursor):
         if isinstance(product.similar, Similar):
             similar_ids_list = product.similar.ids
            #map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
-        map_category_list(my_connection, my_cursor, product.categories_sub)
+        # map_category_list(my_connection, my_cursor, product.categories_sub)
+        map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
         
 def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
     if len(similar_ids_list) == 0:
@@ -261,6 +263,14 @@ def map_category_list(my_connection, my_cursor, categories):
                 else:
                     insert_into_category(my_connection, my_cursor, child_category.name, child_category.id, child_category.parent_id)
                 child_category = child_category.sub
+                
+def map_review_list(my_connection, my_cursor, product_id, review_list):
+    if len(review_list) == 0:
+        None
+    else:
+        for review in review_list:
+            review_date = datetime.strptime(review.date, "%Y-%m-%d")
+            insert_into_review(my_connection, my_cursor, product_id, review_date, review.customer, review.rating)
     
 if __name__ == '__main__':
 
