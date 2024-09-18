@@ -243,8 +243,9 @@ def map_product_list(my_connection, my_cursor):
         insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
         if isinstance(product.similar, Similar):
             similar_ids_list = product.similar.ids
-            # map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
-        # map_category_list(my_connection, my_cursor, product.categories_sub)
+            map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
+        map_category_list(my_connection, my_cursor, product.categories_sub)
+        map_category_product_list(my_connection, my_cursor, product.categories_sub, product.id)
         map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
         
 def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
@@ -254,6 +255,16 @@ def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
         for similar_id in similar_ids_list:
             insert_into_product_similar(my_connection, my_cursor, product_id, similar_id)
         
+def map_category_product_list(my_connection, my_cursor, categories, product_id):
+    if len(categories) == 0:
+        None
+    else:
+        for category_index in range(len(categories)):
+            child_category = categories[category_index]
+            while (child_category.sub != None):
+                child_category = child_category.sub
+            insert_into_product_category(my_connection, my_cursor, product_id, child_category.id)
+            
 def map_category_list(my_connection, my_cursor, categories):
     if len(categories) == 0:
         None
