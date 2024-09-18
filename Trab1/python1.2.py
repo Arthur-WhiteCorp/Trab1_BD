@@ -163,11 +163,14 @@ def create_tables(my_connection,my_cursor):
         
         """
         CREATE TABLE REVIEW (
+                REVIEW_ID INTEGER GENERATED ALWAYS AS IDENTITY,
                 PRODUCT_ID INT,
                 REVIEW_DATE DATE,
                 CUSTOMER_ID CHAR(14),
                 REVIEW_RATING RATING,
-                PRIMARY KEY (PRODUCT_ID,CUSTOMER_ID),
+                VOTE INT,
+                HELPFUL INT,
+                PRIMARY KEY (PRODUCT_ID,CUSTOMER_ID, REVIEW_ID),
                 FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCT(PRODUCT_ID)
                 
         )
@@ -221,11 +224,11 @@ def insert_into_product_category(my_connection, my_cursor, PRODUCT_ID:int , CATE
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)   
 
-def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str, CUSTOMER_ID:str, REVIEW_RATING:int):
-    command = """INSERT INTO review (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING) 
-                 VALUES (%s, %s, %s, %s)"""
+def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str, CUSTOMER_ID:str, REVIEW_RATING:int, VOTE: int, HELPFUL: int):
+    command = """INSERT INTO review (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING, VOTE, HELPFUL)
+                 VALUES (%s, %s, %s, %s, %s, %s)"""
     try:
-        my_cursor.execute(command, (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING))
+        my_cursor.execute(command, (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING, VOTE, HELPFUL))
         my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         my_connection.rollback()
@@ -237,10 +240,10 @@ def map_product_list(my_connection, my_cursor):
             product.title = None
             product.group = None
             product.salesrank = None
-        #insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
+        insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
         if isinstance(product.similar, Similar):
             similar_ids_list = product.similar.ids
-           #map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
+            # map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
         # map_category_list(my_connection, my_cursor, product.categories_sub)
         map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
         
@@ -270,17 +273,17 @@ def map_review_list(my_connection, my_cursor, product_id, review_list):
     else:
         for review in review_list:
             review_date = datetime.strptime(review.date, "%Y-%m-%d")
-            insert_into_review(my_connection, my_cursor, product_id, review_date, review.customer, review.rating)
+            insert_into_review(my_connection, my_cursor, product_id, review_date, review.customer, review.rating, review.votes, review.helpful)
     
 if __name__ == '__main__':
 
-    #create_database()
-    #create_database_ini(DATABASE_INI)
+    create_database()
+    create_database_ini(DATABASE_INI)
     #create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    #create_tables(my_connection,my_cursor)
+    create_tables(my_connection,my_cursor)
     map_product_list(my_connection,my_cursor)
     close_cursor(my_cursor)
     close_connection(my_connection)

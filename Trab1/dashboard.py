@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import importlib.util
 
 selected_IdProduto = None
 
@@ -97,4 +98,18 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
+    
+    # file_path = './python1.2.py'
+    # spec = importlib.util.spec_from_file_location("python1_2", file_path)
+    # python1_2 = importlib.util.module_from_spec(spec)
+    # spec.loader.exec_module(python1_2)
+
+    
+    # config = python1_2.load_config
+    # my_connection = python1_2.connect(config)
+    # my_cursor = python1_2.create_cursor(my_connection)
+    
     main()
+    
+    # python1_2.close_cursor(my_cursor)
+    # python1_2.close_connection(my_connection)
