@@ -118,38 +118,19 @@ def get_parameter_for_reviews_atribute(line, index):
 
 def parse_category(category_str):
     
-    # print(category_str)
-    # Encontrar a posição do colchete de abertura
-    start_index = category_str.find('[')
+    id = ''
+    index_aux = 0
     
-    if start_index == -1:
-        # Se não encontrar o colchete, retornar None
-        raise ValueError("Formato inválido para a string")
-        return None, None
+    for i in range(1, len(category_str)):
+        if category_str[-i] == '[':
+            index_aux = -i
+            break
+        elif (i != 1):
+            id = category_str[-i] + id
     
-    # Encontrar a posição do colchete de fechamento
-    end_index = category_str.find(']', start_index)
-    
-    if end_index == -1:
-        # Se não encontrar o colchete de fechamento, retornar None
-        raise ValueError("Formato inválido para a string")
-        return None, None
-    
-    # Extrair o nome e o ID
-    name = category_str[:start_index].strip()
-    id = category_str[start_index + 1:end_index]
+    name = category_str[0:index_aux]
     
     return name, id
-    
-    # print(category_str)
-    # match = re.match(r"([\w\s\-\.\,!#?:+$&()\'\"]*)\[(\d+)\]", category_str)
-    
-    # if match:
-    #     name = match.group(1).strip()  
-    #     id = match.group(2)
-    #     return name, id
-    # else:
-    #     raise ValueError("Formato inválido para a string")
     
 def filter_empty_strings(vetor):
     return [item for item in vetor if item != '']
@@ -211,7 +192,7 @@ def get_sub_review(line):
     
 lista_produtos = []
 
-with open('amazon-meta_teste.txt', 'r') as file:
+with open('amazon-meta.txt', 'r') as file:
     lines = file.readlines()
     new_product = Product()
     

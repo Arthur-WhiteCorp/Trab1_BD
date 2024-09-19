@@ -1,7 +1,3 @@
-Id:   0
-ASIN: 0771044445
-  discontinued product
-
 Id:   1
 ASIN: 0827229534
   title: Patterns of Preaching: A Sermon Sampler
@@ -1173,60 +1169,3 @@ ASIN: 1550416243
    |Books[283155]|Subjects[1000]|Entertainment[86]|Humor[4456]|Essays[4464]
    |Books[283155]|Subjects[1000]|Entertainment[86]|Humor[4456]|General[4466]
   reviews: total: 0  downloaded: 0  avg rating: 0
-
-Id:   57
-ASIN: 0398068917
-  title: Investigating Computer Crime: A Primer for Security Managers
-  group: Book
-  salesrank: 1501773
-  similar: 0
-  categories: 5
-   |Books[283155]|Subjects[1000]|Computers & Internet[5]|Digital Business & Culture[549726]|Hackers[3648]
-   |Books[283155]|Subjects[1000]|Computers & Internet[5]|Digital Business & Culture[549726]|Project Management[3997]|Security[4003]
-   |Books[283155]|Subjects[1000]|Computers & Internet[5]|General[657762]
-   |[265523]|Amazon.com Stores[285080]|Home & Office[764512]|Computer & Internet Books[768162]|Internet[768564]|Digital Business & Culture[768606]|Hackers[768618]
-   |[265523]|Amazon.com Stores[285080]|Home & Office[764512]|Computer & Internet Books[768162]|Internet[768564]|Digital Business & Culture[768606]|Project Management[768626]|Security[768636]
-  reviews: total: 1  downloaded: 1  avg rating: 1
-    2003-11-14  cutomer: A2SKMDEWRJAZ07  rating: 1  votes:   0  helpful:   0
-
-Id:   58
-ASIN: 087842461X
-  title: Raptors of the Rockies: Biology of the Birds of Prey and Species Accounts of the Raptors of the Rockies
-  group: Book
-  salesrank: 1091842
-  similar: 0
-  categories: 5
-   |Books[283155]|Subjects[1000]|Outdoors & Nature[290060]|Field Guides[290078]|Birds[290081]
-   |Books[283155]|Subjects[1000]|Outdoors & Nature[290060]|Field Guides[290078]|Regional[290082]|United States[290089]|Rocky Mountains[290094]
-   |Books[283155]|Subjects[1000]|Outdoors & Nature[290060]|Birdwatching[16386]|General[290110]
-   |Books[283155]|Subjects[1000]|Outdoors & Nature[290060]|Reference[764418]
-   |Books[283155]|Specialty Stores[504360]|jp-unknown2[1061350]
-  reviews: total: 0  downloaded: 0  avg rating: 0
-
-Id:   59
-ASIN: 6303360041
-  title: None But the Lonely Heart
-  group: Video
-  salesrank: 13524
-  similar: 5  B00000JRW5  630290899X  B0000DD780  B000083C8K  B000062XF1
-  categories: 14
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( B )[140748]|Barrymore, Ethel[141122]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( B )[140748]|Bohnen, Roman[141883]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( B )[140748]|Boulton, Matthew[142037]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( C )[142797]|Coulouris, George[144211]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( D )[144551]|Duryea, Dan[145628]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( F )[146055]|Fitzgerald, Barry[146404]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( G )[146925]|Grant, Cary[147686]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( S )[157485]|Shayne, Konstantin[158210]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( S )[157485]|Soderling, Walter[158751]
-   |[139452]|VHS[404272]|Actors & Actresses[140]|( W )[160685]|Wyatt, Jane[161832]
-   |[139452]|VHS[404272]|Genres[404274]|Drama[129]|General[168754]
-   |[139452]|VHS[404272]|Genres[404274]|Drama[129]|Classics[524212]
-   |[139452]|VHS[404272]|Genres[404274]|Drama[129]|By Theme[168482]|Psychological Drama[740040]
-   |[139452]|VHS[404272]|Genres[404274]|Drama[129]|Family Life[740052]|Mothers & Sons[740062]
-  reviews: total: 5  downloaded: 5  avg rating: 4
-    1998-12-1  cutomer:   ARG3LJ4U41ZX  rating: 5  votes:   5  helpful:   4
-    1999-9-4  cutomer:  ATVPDKIKX0DER  rating: 5  votes:  11  helpful:  11
-    2000-8-4  cutomer: A1AXDPUTA9V3U7  rating: 5  votes:  14  helpful:  14
-    2000-8-25  cutomer:  AYRDHOZM1GYXU  rating: 5  votes:  19  helpful:  18
-    2002-7-2  cutomer: A34D9Q0JTF7N7K  rating: 1  votes:  16  helpful:   2
