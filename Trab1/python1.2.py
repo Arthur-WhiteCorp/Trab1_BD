@@ -56,11 +56,19 @@ def create_user():
                             grant_access_command],capture_output=True,text=True)
     error_handling(grant_user_access_to_db.stderr)
 
+    grant_usage_command = f"GRANT USAGE ON SCHEMA public TO {USER_NAME_LOWER};"
+    subprocess.run(['sudo', "-u", "postgres", 'psql', '-d', DATABASE_NAME_LOWER, '-c', grant_usage_command], capture_output=True, text=True)
 
     permission_command = f"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {USER_NAME_LOWER};"
     give_user_permissions = subprocess.run(['sudo',"-u" , "postgres" ,'psql','-d' ,DATABASE_NAME_LOWER,'-c' , 
                             permission_command],capture_output=True,text=True)
     error_handling(give_user_permissions.stderr)
+
+    own_command = f"ALTER DATABASE {DATABASE_NAME_LOWER} OWNER TO {USER_NAME_LOWER}" 
+    give_own_to_user = subprocess.run(['sudo',"-u" , "postgres" ,'psql','-d' ,DATABASE_NAME_LOWER,'-c' , 
+                            own_command],capture_output=True,text=True)
+    error_handling(give_own_to_user.stderr)
+
 
 def resolve_path(file_name):
     current_dir_path = os.getcwd()
@@ -189,7 +197,6 @@ def insert_into_product(my_connection, my_cursor, PRODUCT_ID:int, ASIN:str, TITL
                   VALUES (%s,%s,%s,%s,%s)"""
     try:
         my_cursor.execute(command, (PRODUCT_ID, ASIN, TITLE, PRODUCT_GROUP, SALES_RANK))
-        my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)    
 
@@ -199,7 +206,6 @@ def insert_into_product_similar(my_connection, my_cursor, PRODUCT_ID:int, SIMILA
                   VALUES (%s,%s)"""
     try:
         my_cursor.execute(command, (PRODUCT_ID, SIMILAR_ASIN))
-        my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
 
@@ -209,7 +215,6 @@ def insert_into_category(my_connection, my_cursor, CATEGORY_NAME:str, CATEGORY_I
                   VALUES (%s,%s,%s) ON CONFLICT (CATEGORY_NAME, CATEGORY_ID) DO NOTHING"""
     try:
         my_cursor.execute(command, (CATEGORY_NAME, CATEGORY_ID, PARENT_ID))
-        my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
         my_connection.rollback()
@@ -220,7 +225,6 @@ def insert_into_product_category(my_connection, my_cursor, PRODUCT_ID:int , CATE
                   VALUES (%s,%s)"""
     try:
         my_cursor.execute(command, (PRODUCT_ID, CATEGORY_ID))
-        my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)   
 
@@ -229,7 +233,6 @@ def insert_into_review(my_connection, my_cursor, PRODUCT_ID:int, REVIEW_DATE:str
                  VALUES (%s, %s, %s, %s, %s, %s)"""
     try:
         my_cursor.execute(command, (PRODUCT_ID, REVIEW_DATE, CUSTOMER_ID, REVIEW_RATING, VOTE, HELPFUL))
-        my_connection.commit()
     except (psycopg2.DatabaseError, Exception) as error:
         my_connection.rollback()
         print(error)
@@ -240,6 +243,7 @@ def map_product_list(my_connection, my_cursor):
             product.title = None
             product.group = None
             product.salesrank = None
+        
         insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
         if isinstance(product.similar, Similar):
             similar_ids_list = product.similar.ids
@@ -247,7 +251,10 @@ def map_product_list(my_connection, my_cursor):
         map_category_list(my_connection, my_cursor, product.categories_sub)
         map_category_product_list(my_connection, my_cursor, product.categories_sub, product.id)
         map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
-        
+    my_connection.commit()
+
+
+
 def map_similar_list(my_connection, my_cursor, product_id, similar_ids_list):
     if len(similar_ids_list) == 0:
         None
@@ -290,11 +297,13 @@ if __name__ == '__main__':
 
     create_database()
     create_database_ini(DATABASE_INI)
-    #create_user()
+    create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
     create_tables(my_connection,my_cursor)
     map_product_list(my_connection,my_cursor)
+    print("MAPEOU TODOS")
+
     close_cursor(my_cursor)
     close_connection(my_connection)
