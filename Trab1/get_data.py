@@ -211,7 +211,7 @@ def get_sub_review(line):
     
 lista_produtos = []
 
-with open('amazon-meta_teste.txt', 'r') as file:
+with open('amazon-meta.txt', 'r') as file:
     lines = file.readlines()
     new_product = Product()
     
