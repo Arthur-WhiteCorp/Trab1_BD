@@ -88,11 +88,34 @@ def query_1(cursor):
     print("\n5 Comentários mais úteis com menor avaliação:")
     for review in low_rating_reviews:
         print(review)
+        
+def query_2(cursor):
+    product_id = 2  # Substitua pelo ID do produto desejado
+
+    # Query para listar os produtos similares com maiores vendas
+    query_similar_products = """
+        SELECT p_sim.SIMILAR_ASIN, p2.TITLE, p2.SALES_RANK
+        FROM PRODUCT p
+        JOIN PRODUCT_SIMILAR p_sim ON p.PRODUCT_ID = p_sim.PRODUCT_ID
+        JOIN PRODUCT p2 ON p_sim.SIMILAR_ASIN = p2.ASIN
+        WHERE p.PRODUCT_ID = %s
+        AND p2.SALES_RANK < p.SALES_RANK;
+    """
+
+    # Executar a query
+    cursor.execute(query_similar_products, (product_id,))
+    similar_products = cursor.fetchall()
+
+    # Exibir os resultados
+    print("Produtos similares com maiores vendas:")
+    for product in similar_products:
+        print(f"ASIN: {product[0]}, Título: {product[1]}, Ranking de Vendas: {product[2]}")
 
 if __name__ == '__main__':
 
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    query_1(my_cursor)
+    # query_1(my_cursor)
+    query_2(my_cursor)
     close_connection(my_connection)
