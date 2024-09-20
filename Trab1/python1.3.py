@@ -23,7 +23,7 @@ def consultar(cursor):
     option_query = numero_selecionado
     define_tabela()
     faz_consulta(cursor,numero_selecionado, id_produto)
-
+    insere_dados_tabela()
 
 
 def faz_consulta(cursor,option:int,id_produto:int):
