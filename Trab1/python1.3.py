@@ -78,14 +78,21 @@ def query_1(cursor, product_id):
     cursor.execute(query_low_rating, (product_id,))
     low_rating_reviews = cursor.fetchall()
 
-    # Exibir os resultados
-    print("5 Comentários mais úteis com maior avaliação:")
-    for review in high_rating_reviews:
-        print(review)
+    # Função para exibir os resultados em formato de tabela
+    def print_reviews(title, reviews):
+        # Cabeçalho da tabela
+        print(title)
+        print(f"{'REVIEW_ID':<12} {'CUSTOMER_ID':<15} {'REVIEW_RATING':<15} {'HELPFUL':<10} {'VOTE':<5}")
+        print("-" * 65)  # Linha de separação
+        
+        # Linhas da tabela (reviews)
+        for review in reviews:
+            print(f"{review[0]:<12} {review[1]:<15} {review[2]:<15} {review[3]:<10} {review[4]:<5}")
 
-    print("\n5 Comentários mais úteis com menor avaliação:")
-    for review in low_rating_reviews:
-        print(review)
+    # Exibir os resultados
+    print_reviews("\n\n5 Comentários mais úteis com maior avaliação:\n", high_rating_reviews)
+    print_reviews("\n\n5 Comentários mais úteis com menor avaliação:\n", low_rating_reviews)
+    
         
 def query_2(cursor, product_id):
 
