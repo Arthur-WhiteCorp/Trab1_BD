@@ -51,10 +51,8 @@ def create_cursor(my_connection):
     
     return my_cursor
 
-def query_1(cursor):
-    product_id = 3  # Substitua pelo ID do produto desejado
+def query_1(cursor, product_id):
 
-    # Query para obter os 5 comentários mais úteis e com maior avaliação
     query_high_rating = """
         SELECT REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
         FROM REVIEW
@@ -89,10 +87,8 @@ def query_1(cursor):
     for review in low_rating_reviews:
         print(review)
         
-def query_2(cursor):
-    product_id = 2  # Substitua pelo ID do produto desejado
+def query_2(cursor, product_id):
 
-    # Query para listar os produtos similares com maiores vendas
     query_similar_products = """
         SELECT p_sim.SIMILAR_ASIN, p2.TITLE, p2.SALES_RANK
         FROM PRODUCT p
@@ -111,8 +107,7 @@ def query_2(cursor):
     for product in similar_products:
         print(f"ASIN: {product[0]}, Título: {product[1]}, Ranking de Vendas: {product[2]}")
 
-def query_3(cursor):
-    product_id = 2 
+def query_3(cursor, product_id):
     query_avg_rating = """ SELECT REVIEW_1.REVIEW_DATE, avg(REVIEW_2.REVIEW_RATING)
                            FROM REVIEW AS REVIEW_1 ,REVIEW AS REVIEW_2
                            WHERE REVIEW_1.REVIEW_DATE >= REVIEW_2.REVIEW_DATE
@@ -247,11 +242,102 @@ ORDER BY
     print("Resposta:")
     for answer in answers:
         print(answer)
-
+        
+def menu():
+    print()
+    
+    print("|--------------------------------------MENU--------------------------------------|")
+    print("1 - Dado um produto, listar os 5 comentários mais úteis e com maior avaliação e os 5 comentários mais úteis e com menor avaliação")
+    print("2 - Dado um produto, listar os produtos similares com maiores vendas do que ele")
+    print("3 - Dado um produto, mostrar a evolução diária das médias de avaliação ao longo do intervalo de tempo coberto no arquivo de entrada")
+    print("4 - Listar os 10 produtos líderes de venda em cada grupo de produtos")
+    print("5 - Listar os 10 produtos com a maior média de avaliações úteis positivas por produto")
+    print("6 - Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto")
+    print("7 - Listar os 10 clientes que mais fizeram comentários por grupo de produto")
+    print("8 - SAIR")
+    
+    print()
+    
 if __name__ == '__main__':
-
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    query_7(my_cursor)
+    
+    menu()
+    option = input("Digite a opção desejada: ")
+    print()
+    
+    while option != '8':
+        match option:
+            case '1':
+                product_id = int(input("Insira o ID do produto: "))
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_1(my_cursor, product_id)
+                print()
+                input("Pressione enter para voltar ao menu... ")
+                os.system("clear")
+            case '2':
+                product_id = int(input("Insira o ID do produto: "))
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_2(my_cursor, product_id)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '3':
+                product_id = int(input("Insira o ID do produto: "))
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_3(my_cursor, product_id)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '4':
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_4(my_cursor)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '5':
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_5(my_cursor)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '6':
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_6(my_cursor)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '7':
+                print()
+                print("--------------RESPOSTA DA CONSULTA--------------")
+                print()
+                query_7(my_cursor)
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+            case '8':
+                break
+            case _:
+                print()
+                print("Opção inválida. Por favor, tente novamente.")
+                print()
+                input("Pressione Enter para voltar ao menu... ")
+                os.system("clear")
+        
+        menu()
+        option = input("Digite a opção desejada: ")
+                
     close_connection(my_connection)
