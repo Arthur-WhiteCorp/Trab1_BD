@@ -411,7 +411,79 @@ def query_5(cursor):
     print("Resposta:")
     for answer in answers:
         print(answer)
+        
+def query_6(cursor):
+    my_query = """
+    SELECT 
+    C.CATEGORY_NAME, 
+    AVG(R.HELPFUL) AS AVG_HELPFUL
+    FROM 
+        CATEGORY C
+    JOIN 
+        PRODUCT_CATEGORY PC ON C.CATEGORY_ID = PC.CATEGORY_ID
+    JOIN 
+        PRODUCT P ON PC.PRODUCT_ID = P.PRODUCT_ID
+    JOIN 
+        REVIEW R ON P.PRODUCT_ID = R.PRODUCT_ID
+    WHERE 
+        R.REVIEW_RATING >= 1  -- Filtra avaliações com REVIEW_RATING positivo
+    GROUP BY 
+        C.CATEGORY_NAME
+    HAVING 
+        AVG(R.HELPFUL) > 0  -- Considera apenas categorias com médias úteis positivas
+    ORDER BY 
+        AVG_HELPFUL DESC
+    LIMIT 5;
+    """
+    cursor.execute(my_query)
+    answers = cursor.fetchall()
 
+    global data_query
+    data_query = answers
+
+    print("Resposta:")
+    for answer in answers:
+        print(answer)
+        
+def query_7(cursor):
+    my_query = """
+WITH RankedReviews AS (
+    SELECT 
+        P.PRODUCT_GROUP, 
+        R.CUSTOMER_ID, 
+        COUNT(R.REVIEW_ID) AS TOTAL_REVIEWS,
+        ROW_NUMBER() OVER (PARTITION BY P.PRODUCT_GROUP ORDER BY COUNT(R.REVIEW_ID) DESC) AS RANK
+    FROM 
+        PRODUCT P
+    JOIN 
+        REVIEW R ON P.PRODUCT_ID = R.PRODUCT_ID
+    GROUP BY 
+        P.PRODUCT_GROUP, 
+        R.CUSTOMER_ID
+)
+SELECT 
+    PRODUCT_GROUP, 
+    CUSTOMER_ID, 
+    TOTAL_REVIEWS
+FROM 
+    RankedReviews
+WHERE 
+    RANK <= 10
+ORDER BY 
+    PRODUCT_GROUP, 
+    TOTAL_REVIEWS DESC;
+
+    """
+    cursor.execute(my_query)
+    answers = cursor.fetchall()
+
+    global data_query
+    data_query = answers
+
+    print("Resposta:")
+    for answer in answers:
+        print(answer)
+        
 if __name__ == '__main__':
 
     config = load_config()
@@ -419,7 +491,7 @@ if __name__ == '__main__':
     
     my_cursor = create_cursor(my_connection)
     # query_1(my_cursor)
-    #query_5(my_cursor)
-    main(my_cursor)
+    query_7(my_cursor)
+    # main(my_cursor)
 
     close_connection(my_connection)
