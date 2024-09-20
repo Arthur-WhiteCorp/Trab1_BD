@@ -162,7 +162,7 @@ def main(cursor):
     global data_query
 
     # Insere os dados na tabela
-    
+    insere_dados_tabela()
     # Posiciona o Treeview na janela
     tree.pack(side=tk.LEFT, pady=20, padx=20)
 
