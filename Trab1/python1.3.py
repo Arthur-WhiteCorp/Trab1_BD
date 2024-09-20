@@ -161,7 +161,31 @@ def query_4(cursor):
         if answer[1] and answer[2] and answer[3]:
             print(answer)
         
+def query_5(cursor):
+    my_query = """
+    SELECT 
+    P.TITLE, 
+        AVG(R.HELPFUL) AS AVG_HELPFUL
+    FROM 
+        PRODUCT P
+    JOIN 
+        REVIEW R ON P.PRODUCT_ID = R.PRODUCT_ID
+    WHERE 
+        R.REVIEW_RATING > 0  -- Considera apenas reviews com rating maior que zero
+    GROUP BY 
+        P.TITLE
+    HAVING 
+        AVG(R.HELPFUL) > 0  -- Garante que só produtos com avaliações úteis sejam considerados
+    ORDER BY 
+        AVG_HELPFUL DESC
+    LIMIT 10;
+    """
+    cursor.execute(my_query)
+    answers = cursor.fetchall()
 
+    print("Resposta:")
+    for answer in answers:
+        print(answer)
 
 if __name__ == '__main__':
 
@@ -169,5 +193,5 @@ if __name__ == '__main__':
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
     # query_1(my_cursor)
-    query_4(my_cursor)
+    query_5(my_cursor)
     close_connection(my_connection)
