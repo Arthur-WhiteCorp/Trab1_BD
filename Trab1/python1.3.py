@@ -78,16 +78,18 @@ def query_1(cursor, product_id):
     cursor.execute(query_low_rating, (product_id,))
     low_rating_reviews = cursor.fetchall()
 
-    # Função para exibir os resultados em formato de tabela
     def print_reviews(title, reviews):
-        # Cabeçalho da tabela
+        # Cabeçalho
         print(title)
-        print(f"{'REVIEW_ID':<12} {'CUSTOMER_ID':<15} {'REVIEW_RATING':<15} {'HELPFUL':<10} {'VOTE':<5}")
-        print("-" * 65)  # Linha de separação
         
         # Linhas da tabela (reviews)
         for review in reviews:
-            print(f"{review[0]:<12} {review[1]:<15} {review[2]:<15} {review[3]:<10} {review[4]:<5}")
+            print(f"REVIEW_ID    : {review[0]}")
+            print(f"CUSTOMER_ID  : {review[1]}")
+            print(f"REVIEW_RATING: {review[2]}")
+            print(f"HELPFUL      : {review[3]}")
+            print(f"VOTE         : {review[4]}")
+            print("-" * 40)  # Linha de separação entre as reviews
 
     # Exibir os resultados
     print_reviews("\n\n5 Comentários mais úteis com maior avaliação:\n", high_rating_reviews)
@@ -109,10 +111,17 @@ def query_2(cursor, product_id):
     cursor.execute(query_similar_products, (product_id,))
     similar_products = cursor.fetchall()
 
-    # Exibir os resultados
-    print("Produtos similares com maiores vendas:")
-    for product in similar_products:
-        print(f"ASIN: {product[0]}, Título: {product[1]}, Ranking de Vendas: {product[2]}")
+    def print_similar_products(title, products):
+        print(title)
+        
+        for product in products:
+            print(f"SIMILAR_ASIN : {product[0]}")
+            print(f"TÍTULO       : {product[1]}")
+            print(f"SALES_RANK   : {product[2]}")
+            print("-" * 40)  # Linha de separação entre os produtos
+
+    print_similar_products("\nProdutos similares com maiores vendas:\n", similar_products)
+
 
 def query_3(cursor, product_id):
     query_avg_rating = """ SELECT REVIEW_1.REVIEW_DATE, avg(REVIEW_2.REVIEW_RATING)
@@ -157,12 +166,21 @@ def query_4(cursor):
 
     cursor.execute(my_query)
     answers = cursor.fetchall()
-
-    print("Resposta:")
-    for answer in answers:
-        if answer[1] and answer[2] and answer[3]:
-            print(answer)
+    
+    def print_ranked_products(title, products):
+        print(title)
         
+        # Linhas da tabela (products)
+        for product in products:
+            if product[1] and product[2] and product[3]:
+                print(f"ASIN          : {product[0]}")
+                print(f"TÍTULO        : {product[1]}")
+                print(f"PRODUCT_GROUP : {product[2]}")
+                print(f"SALES_RANK    : {product[3]}")
+                print("-" * 40)  # Linha de separação entre os produtos
+
+    print_ranked_products("Top 10 Produtos por Grupo de Produto:", answers)
+            
 def query_5(cursor):
     my_query = """
     SELECT 
@@ -184,10 +202,18 @@ def query_5(cursor):
     """
     cursor.execute(my_query)
     answers = cursor.fetchall()
+    
+    def print_avg_helpful_products(title, products):
+        # Cabeçalho
+        print(title)
+        
+        # Linhas da tabela (products)
+        for product in products:
+            print(f"TÍTULO       : {product[0]}")
+            print(f"AVG_HELPFUL  : {product[1]:.2f}")
+            print("-" * 40)  # Linha de separação entre os produtos
 
-    print("Resposta:")
-    for answer in answers:
-        print(answer)
+    print_avg_helpful_products("Top 10 Produtos com a Maior Média de Avaliações Úteis:", answers)
         
 def query_6(cursor):
     my_query = """
@@ -211,9 +237,17 @@ def query_6(cursor):
     cursor.execute(my_query)
     answers = cursor.fetchall()
 
-    print("Resposta:")
-    for answer in answers:
-        print(answer)
+    def print_avg_helpful_groups(title, groups):
+        # Cabeçalho
+        print(title)
+        
+        # Linhas da tabela (groups)
+        for group in groups:
+            print(f"GRUPO DE PRODUTO : {group[0]}")
+            print(f"AVG_HELPFUL      : {group[1]:.2f}")
+            print("-" * 40)  # Linha de separação entre os grupos
+            
+    print_avg_helpful_groups("Top 5 Grupos de Produtos com a Maior Média de Avaliações Úteis: \n", answers)
         
 def query_7(cursor):
     my_query = """
@@ -245,10 +279,20 @@ ORDER BY
     """
     cursor.execute(my_query)
     answers = cursor.fetchall()
+    
+    def print_ranked_reviews(title, reviews):
+        # Cabeçalho
+        print(title)
+        
+        # Linhas da tabela (reviews)
+        for review in reviews:
+            print(f"GRUPO DE PRODUTO : {review[0]}")
+            print(f"ID DO CLIENTE    : {review[1]}")
+            print(f"TOTAL DE REVIEWS : {review[2]}")
+            print("-" * 40)  # Linha de separação entre os reviews
 
-    print("Resposta:")
-    for answer in answers:
-        print(answer)
+    print_ranked_reviews("Top 10 Clientes com Mais Reviews por Grupo de Produto:", answers)
+    
         
 def menu():
     print()
