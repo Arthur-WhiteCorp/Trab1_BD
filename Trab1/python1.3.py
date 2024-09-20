@@ -17,12 +17,16 @@ def show_input():
 
 def consultar(cursor):
     global option_query
+    global tree
     id_produto = show_input()
     opcao_selecionada = dropdown.get()
     numero_selecionado = inverso_opcoes[opcao_selecionada]  # Obtém o número a partir do texto
     option_query = numero_selecionado
     define_tabela()
     faz_consulta(cursor,numero_selecionado, id_produto)
+    for item in tree.get_children():
+        tree.delete(item)
+
     insere_dados_tabela()
 
 
