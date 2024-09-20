@@ -111,6 +111,25 @@ def query_2(cursor):
     for product in similar_products:
         print(f"ASIN: {product[0]}, Título: {product[1]}, Ranking de Vendas: {product[2]}")
 
+def query_3(cursor):
+    product_id = 2 
+    query_avg_rating = """ SELECT REVIEW_1.REVIEW_DATE, avg(REVIEW_2.REVIEW_RATING)
+                           FROM REVIEW AS REVIEW_1 ,REVIEW AS REVIEW_2
+                           WHERE REVIEW_1.REVIEW_DATE >= REVIEW_2.REVIEW_DATE
+                           and REVIEW_1.PRODUCT_ID = %s
+                           and REVIEW_2.PRODUCT_ID = REVIEW_1.PRODUCT_ID
+                           GROUP BY REVIEW_1.REVIEW_DATE
+                           ORDER BY REVIEW_1.REVIEW_DATE"""
+
+    cursor.execute(query_avg_rating, (product_id,))
+    ratings = cursor.fetchall()
+
+
+    print("EVOLUÇÃO DAS MÉDIAS:")
+    for rating in ratings:
+        print(f"DATE: {rating[0]}, RATING_AVG: {rating[1]}")
+
+
 if __name__ == '__main__':
 
     config = load_config()
