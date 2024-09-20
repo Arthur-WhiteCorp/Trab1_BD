@@ -59,7 +59,6 @@ def define_tabela():
     print("earai",option_query)
     match option_query:
         case 0:
-            print("entrouuuuu")
             tree['columns'] = ('Nome', 'IdProduto')
             # Define os cabeçalhos das colunas
             tree.column('#0', width=0, stretch=tk.NO)  # Coluna fantasma, não usada
@@ -70,7 +69,6 @@ def define_tabela():
             tree.heading('Nome', text='Nome', anchor=tk.W)
             tree.heading('IdProduto', text='IdProduto', anchor=tk.CENTER)
         case 1:
-            print("rapaaizr")
             tree['columns'] = ('REVIEW_ID', 'CUSTOMER_ID','REVIEW_RATING','HELPFUL','VOTE')
             # Define os cabeçalhos das colunas
             tree.column('#0', width=0, stretch=tk.NO)  # Coluna fantasma, não usada
@@ -88,6 +86,49 @@ def define_tabela():
             tree.heading('HELPFUL', text='HELPFUL', anchor=tk.W)
             tree.heading('VOTE', text='VOTE', anchor=tk.CENTER)   
             #REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
+        case 2:
+            None
+        case 3:
+            None
+        case 4:
+            None
+        case 5:
+            None
+        case 6:
+            None
+        case 7: 
+            None   
+
+def insere_dados_tabela():
+    global option_query
+    global data_query
+
+    match option_query:
+        case 1:
+            i = 0
+            for data in data_query:
+                tree.insert(parent='', 
+                            index='end', 
+                            iid=i, text='', 
+                            values=(data[0], 
+                                    data[1],
+                                    data[2],
+                                    data[3],
+                                    data[4]))
+                i = i + 1
+        case 2:
+            None
+        case 3:
+            None
+        case 4:
+            None
+        case 5:
+            None
+        case 6:
+            None
+        case 7:
+            None
+
 def main(cursor):
     root = tk.Tk()
     root.title("Tabela com Dropdown, Botão de Consulta e IdProduto")
@@ -121,9 +162,7 @@ def main(cursor):
     global data_query
 
     # Insere os dados na tabela
-    for i, (nome, IdProduto) in enumerate(data_query):
-        tree.insert(parent='', index='end', iid=i, text='', values=(nome, IdProduto))
-
+    
     # Posiciona o Treeview na janela
     tree.pack(side=tk.LEFT, pady=20, padx=20)
 
