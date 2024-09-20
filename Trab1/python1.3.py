@@ -128,6 +128,39 @@ def query_3(cursor):
     print("EVOLUÇÃO DAS MÉDIAS:")
     for rating in ratings:
         print(f"DATE: {rating[0]}, RATING_AVG: {rating[1]}")
+        
+def query_4(cursor):
+    my_query = """  
+              WITH RankedProducts AS (
+              SELECT 
+                  ASIN,
+                  TITLE,
+                  PRODUCT_GROUP,
+                  SALES_RANK,
+                  ROW_NUMBER() OVER (PARTITION BY PRODUCT_GROUP ORDER BY SALES_RANK) AS rank
+              FROM 
+                  PRODUCT
+      )
+      SELECT 
+          ASIN,
+          TITLE,
+          PRODUCT_GROUP,
+          SALES_RANK
+      FROM 
+          RankedProducts
+      WHERE 
+          rank <= 10
+      ORDER BY 
+          PRODUCT_GROUP, SALES_RANK"""
+
+    cursor.execute(my_query)
+    answers = cursor.fetchall()
+
+    print("Resposta:")
+    for answer in answers:
+        if answer[1] and answer[2] and answer[3]:
+            print(answer)
+        
 
 
 if __name__ == '__main__':
@@ -136,5 +169,5 @@ if __name__ == '__main__':
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
     # query_1(my_cursor)
-    query_2(my_cursor)
+    query_4(my_cursor)
     close_connection(my_connection)
