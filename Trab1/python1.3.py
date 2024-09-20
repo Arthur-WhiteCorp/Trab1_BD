@@ -50,9 +50,49 @@ def create_cursor(my_connection):
         print(error)
     
     return my_cursor
+
+def query_1(cursor):
+    product_id = 3  # Substitua pelo ID do produto desejado
+
+    # Query para obter os 5 comentários mais úteis e com maior avaliação
+    query_high_rating = """
+        SELECT REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
+        FROM REVIEW
+        WHERE PRODUCT_ID = %s
+        ORDER BY REVIEW_RATING DESC, HELPFUL DESC
+        LIMIT 5;
+    """
+
+    # Query para obter os 5 comentários mais úteis e com menor avaliação
+    query_low_rating = """
+        SELECT REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
+        FROM REVIEW
+        WHERE PRODUCT_ID = %s
+        ORDER BY REVIEW_RATING ASC, HELPFUL DESC
+        LIMIT 5;
+    """
+
+    # Executar a query para comentários com maior avaliação
+    cursor.execute(query_high_rating, (product_id,))
+    high_rating_reviews = cursor.fetchall()
+
+    # Executar a query para comentários com menor avaliação
+    cursor.execute(query_low_rating, (product_id,))
+    low_rating_reviews = cursor.fetchall()
+
+    # Exibir os resultados
+    print("5 Comentários mais úteis com maior avaliação:")
+    for review in high_rating_reviews:
+        print(review)
+
+    print("\n5 Comentários mais úteis com menor avaliação:")
+    for review in low_rating_reviews:
+        print(review)
+
 if __name__ == '__main__':
 
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
+    query_1(my_cursor)
     close_connection(my_connection)

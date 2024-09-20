@@ -5,11 +5,11 @@ from configparser import ConfigParser
 import os
 from datetime import datetime
 
-from get_data import lista_produtos
-from get_data import Similar
-from get_data import CategoriesSub
-from get_data import Review
-from get_data import ReviewSub
+# from get_data import lista_produtos
+# from get_data import Similar
+# from get_data import CategoriesSub
+# from get_data import Review
+# from get_data import ReviewSub
 
 
 DATABASE_NAME = 'PRODUCTS'
@@ -244,13 +244,13 @@ def map_product_list(my_connection, my_cursor):
             product.group = None
             product.salesrank = None
         
-        insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
-        if isinstance(product.similar, Similar):
-            similar_ids_list = product.similar.ids
-            map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
-        map_category_list(my_connection, my_cursor, product.categories_sub)
-        map_category_product_list(my_connection, my_cursor, product.categories_sub, product.id)
-        map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
+        # insert_into_product(my_connection, my_cursor, product.id, product.asin, product.title, product.group, product.salesrank)
+        # if isinstance(product.similar, Similar):
+        #     similar_ids_list = product.similar.ids
+        #     map_similar_list(my_connection, my_cursor, product.id, similar_ids_list)
+        # map_category_list(my_connection, my_cursor, product.categories_sub)
+        # map_category_product_list(my_connection, my_cursor, product.categories_sub, product.id)
+        # map_review_list(my_connection, my_cursor, product.id, product.reviews_sub)
     my_connection.commit()
 
 
@@ -293,17 +293,55 @@ def map_review_list(my_connection, my_cursor, product_id, review_list):
             review_date = datetime.strptime(review.date, "%Y-%m-%d")
             insert_into_review(my_connection, my_cursor, product_id, review_date, review.customer, review.rating, review.votes, review.helpful)
     
+def query_1(cursor):
+    product_id = 3  # Substitua pelo ID do produto desejado
+
+    # Query para obter os 5 comentários mais úteis e com maior avaliação
+    query_high_rating = """
+        SELECT REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
+        FROM REVIEW
+        WHERE PRODUCT_ID = %s
+        ORDER BY REVIEW_RATING DESC, HELPFUL DESC
+        LIMIT 5;
+    """
+
+    # Query para obter os 5 comentários mais úteis e com menor avaliação
+    query_low_rating = """
+        SELECT REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
+        FROM REVIEW
+        WHERE PRODUCT_ID = %s
+        ORDER BY REVIEW_RATING ASC, HELPFUL DESC
+        LIMIT 5;
+    """
+
+    # Executar a query para comentários com maior avaliação
+    cursor.execute(query_high_rating, (product_id,))
+    high_rating_reviews = cursor.fetchall()
+
+    # Executar a query para comentários com menor avaliação
+    cursor.execute(query_low_rating, (product_id,))
+    low_rating_reviews = cursor.fetchall()
+
+    # Exibir os resultados
+    print("5 Comentários mais úteis com maior avaliação:")
+    for review in high_rating_reviews:
+        print(review)
+
+    print("\n5 Comentários mais úteis com menor avaliação:")
+    for review in low_rating_reviews:
+        print(review)
+
 if __name__ == '__main__':
 
-    create_database()
-    create_database_ini(DATABASE_INI)
-    create_user()
+    # create_database()
+    # create_database_ini(DATABASE_INI)
+    # create_user()
     config = load_config()
     my_connection = connect(config)
     my_cursor = create_cursor(my_connection)
-    create_tables(my_connection,my_cursor)
-    map_product_list(my_connection,my_cursor)
-    print("MAPEOU TODOS")
+    # create_tables(my_connection,my_cursor)
+    # map_product_list(my_connection,my_cursor)
+    query_1(my_cursor)
 
     close_cursor(my_cursor)
     close_connection(my_connection)
