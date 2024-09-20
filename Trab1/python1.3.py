@@ -414,26 +414,23 @@ def query_5(cursor):
         
 def query_6(cursor):
     my_query = """
-    SELECT 
-    C.CATEGORY_NAME, 
-    AVG(R.HELPFUL) AS AVG_HELPFUL
+        SELECT 
+        P.PRODUCT_GROUP, 
+        AVG(R.HELPFUL) AS AVG_HELPFUL
     FROM 
-        CATEGORY C
-    JOIN 
-        PRODUCT_CATEGORY PC ON C.CATEGORY_ID = PC.CATEGORY_ID
-    JOIN 
-        PRODUCT P ON PC.PRODUCT_ID = P.PRODUCT_ID
+        PRODUCT P
     JOIN 
         REVIEW R ON P.PRODUCT_ID = R.PRODUCT_ID
     WHERE 
-        R.REVIEW_RATING >= 1  -- Filtra avaliações com REVIEW_RATING positivo
+        R.REVIEW_RATING >= 1  -- Considera apenas avaliações com rating positivo
     GROUP BY 
-        C.CATEGORY_NAME
+        P.PRODUCT_GROUP
     HAVING 
-        AVG(R.HELPFUL) > 0  -- Considera apenas categorias com médias úteis positivas
+        AVG(R.HELPFUL) > 0  -- Garante que apenas grupos com médias úteis positivas sejam considerados
     ORDER BY 
         AVG_HELPFUL DESC
     LIMIT 5;
+
     """
     cursor.execute(my_query)
     answers = cursor.fetchall()
@@ -491,7 +488,7 @@ if __name__ == '__main__':
     
     my_cursor = create_cursor(my_connection)
     # query_1(my_cursor)
-    query_7(my_cursor)
+    query_6(my_cursor)
     # main(my_cursor)
 
     close_connection(my_connection)
