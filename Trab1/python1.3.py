@@ -8,7 +8,7 @@ from enum import Enum
 from functools import partial
 
 data_query = []
-
+option_query = 0
 
 def show_input():
     user_input = entry.get()  # Retrieve the text from the input box
@@ -16,9 +16,12 @@ def show_input():
     return int(user_input)
 
 def consultar(cursor):
+    global option_query
     id_produto = show_input()
     opcao_selecionada = dropdown.get()
     numero_selecionado = inverso_opcoes[opcao_selecionada]  # Obtém o número a partir do texto
+    option_query = numero_selecionado
+    define_tabela()
     faz_consulta(cursor,numero_selecionado, id_produto)
 
 
@@ -31,17 +34,13 @@ def faz_consulta(cursor,option:int,id_produto:int):
         case 1:
             query_1(cursor,id_produto)
         case 2:
-            query_2(cursor,id_produto)
-            None
+            query_2(cursor,id_produto)  
         case 3:
-            query_3(cursor,id_produto)
-            None
+            query_3(cursor,id_produto)   
         case 4:
             query_4(cursor)
-            None
         case 5:
             query_5(cursor)
-            None
         case 6:
             None
         case 7:
@@ -53,12 +52,48 @@ def on_row_selected(event):
     selected_item = tree.focus()  # Obtém o item selecionado
     selected_IdProduto = tree.item(selected_item)['values'][1]  # Atualiza o IdProduto associado à linha
 
+
+def define_tabela():
+    global tree
+    global option_query
+    print("earai",option_query)
+    match option_query:
+        case 0:
+            print("entrouuuuu")
+            tree['columns'] = ('Nome', 'IdProduto')
+            # Define os cabeçalhos das colunas
+            tree.column('#0', width=0, stretch=tk.NO)  # Coluna fantasma, não usada
+            tree.column('Nome', anchor=tk.W, width=140)
+            tree.column('IdProduto', anchor=tk.CENTER, width=100)
+            # Cria os cabeçalhos
+            tree.heading('#0', text='', anchor=tk.W)
+            tree.heading('Nome', text='Nome', anchor=tk.W)
+            tree.heading('IdProduto', text='IdProduto', anchor=tk.CENTER)
+        case 1:
+            print("rapaaizr")
+            tree['columns'] = ('REVIEW_ID', 'CUSTOMER_ID','REVIEW_RATING','HELPFUL','VOTE')
+            # Define os cabeçalhos das colunas
+            tree.column('#0', width=0, stretch=tk.NO)  # Coluna fantasma, não usada
+            tree.column('REVIEW_ID', anchor=tk.W, width=5)
+            tree.column('CUSTOMER_ID', anchor=tk.CENTER, width=5)
+            tree.column('REVIEW_RATING', anchor=tk.CENTER, width=5)
+            tree.column('HELPFUL', anchor=tk.CENTER, width=5)
+            tree.column('VOTE', anchor=tk.CENTER, width=5)
+
+            # Cria os cabeçalhos
+            tree.heading('#0', text='', anchor=tk.W)
+            tree.heading('REVIEW_ID', text='REVIEW_ID', anchor=tk.W)
+            tree.heading('CUSTOMER_ID', text='CUSTOMER_ID', anchor=tk.CENTER)  
+            tree.heading('REVIEW_RATING', text='REVIEW_RATING', anchor=tk.W)
+            tree.heading('HELPFUL', text='HELPFUL', anchor=tk.W)
+            tree.heading('VOTE', text='VOTE', anchor=tk.CENTER)   
+            #REVIEW_ID, CUSTOMER_ID, REVIEW_RATING, HELPFUL, VOTE
 def main(cursor):
     root = tk.Tk()
     root.title("Tabela com Dropdown, Botão de Consulta e IdProduto")
 
     # Define o tamanho da janela
-    root.geometry("700x400")
+    root.geometry("1260x1200")
 
     OPCOES_DE_CONSULTA = {
         1: "Dado um produto, listar os 5 comentários mais úteis e com maior avaliação e os 5 comentários mais úteis e com menor avaliação",
@@ -78,18 +113,10 @@ def main(cursor):
     tree = ttk.Treeview(root)
 
     # Define as colunas da tabela
-    tree['columns'] = ('Nome', 'IdProduto')
+    
+    define_tabela()
 
-    # Define os cabeçalhos das colunas
-    tree.column('#0', width=0, stretch=tk.NO)  # Coluna fantasma, não usada
-    tree.column('Nome', anchor=tk.W, width=140)
-    tree.column('IdProduto', anchor=tk.CENTER, width=100)
-
-    # Cria os cabeçalhos
-    tree.heading('#0', text='', anchor=tk.W)
-    tree.heading('Nome', text='NomeD', anchor=tk.W)
-    tree.heading('IdProduto', text='IdProdutoD', anchor=tk.CENTER)
-
+    
     # dados da tabela
     global data_query
 
